@@ -172,9 +172,7 @@ void Game::Render()
 
 	d3dDev->BeginScene();
 
-	d3dDev->SetFVF(vertexBufferType);
 
-	d3dDev->SetStreamSource(0, vertexBuffer, 0, verticesSize);
 	d3dDev->SetIndices(indexBuffer);
 
 	D3DXMatrixLookAtLH(&matView,
@@ -208,44 +206,50 @@ void Game::Render()
 
 	for (unsigned int i = 0; i < appObjects.size(); i++)
 	{
-		d3dDev->SetTexture(0, gameTextures[appObjects[i]->textureIndex]);
-		if (i == 0)
+		int vertexPosition = 0;
+		d3dDev->SetFVF(vertexBuffers[i].type);
+
+		d3dDev->SetStreamSource(0, vertexBuffers[i].data, 0, vertexBuffers[i].verticesSize);
+
+		for (unsigned int j = 0; j < appObjects[i].size(); j++)
 		{
-			static float rot = 0;
-			/*appObjects[i]->matRotateX.m[0][0] -= 0.01f;
-			appObjects[i]->matRotateX.m[1][0] -= 0.01f;
-			appObjects[i]->matRotateX.m[2][0] -= 0.01f;*/
-			D3DXMatrixRotationY(&appObjects[i]->matRotateY, rot);
-            D3DXMatrixRotationX(&appObjects[i]->matRotateX, rot);
-			D3DXMatrixRotationZ(&appObjects[i]->matRotateZ, rot);
-            rot += 0.01f;
-			/*For gun.*/
-			/*D3DXMatrixRotationY(&(appObjects[i]->matRotateX), cameraLookAtX);
-			D3DXMatrixTranslation(&(appObjects[i]->matTranslate), cameraLookAtX, 0, zZoom+18);*/
+			d3dDev->SetTexture(0, gameTextures[appObjects[i][j]->textureIndex]);
+			if (j == 0 && i == 0)
+			{
+				static float rot = 0;
+				/*appObjects[i]->matRotateX.m[0][0] -= 0.01f;
+				appObjects[i]->matRotateX.m[1][0] -= 0.01f;
+				appObjects[i]->matRotateX.m[2][0] -= 0.01f;*/
+				D3DXMatrixRotationY(&appObjects[i][j]->matRotateY, rot);
+				D3DXMatrixRotationX(&appObjects[i][j]->matRotateX, rot);
+				D3DXMatrixRotationZ(&appObjects[i][j]->matRotateZ, rot);
+				rot += 0.01f;
+				/*For gun.*/
+				/*D3DXMatrixRotationY(&(appObjects[i]->matRotateX), cameraLookAtX);
+				D3DXMatrixTranslation(&(appObjects[i]->matTranslate), cameraLookAtX, 0, zZoom+18);*/
+			}
+
+			d3dDev->SetTransform(D3DTS_WORLD, &(appObjects[i][j]->matScale
+				* appObjects[i][j]->matRotateX * appObjects[i][j]->matRotateY * appObjects[i][j]->matRotateZ
+				* appObjects[i][j]->matTranslate));
+
+			MatrixBufferType vertexShaderData;
+
+			D3DXMATRIX matWorld = appObjects[i][j]->matScale
+				* appObjects[i][j]->matRotateX * appObjects[i][j]->matRotateY * appObjects[i][j]->matRotateZ
+				* appObjects[i][j]->matTranslate;
+			vertexShaderData.projection = matProjection;
+			vertexShaderData.world = matWorld;
+			vertexShaderData.view = matView;
+
+			D3DXMatrixTranspose(&matWorld, &matWorld);
+
+			d3dDev->SetVertexShaderConstantF(0, matWorld, 4);
+
+			d3dDev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, vertexPosition, 0, appObjects[i][j]->verticesNumber, 0, appObjects[i][j]->trianglesNumber);
+			vertexPosition += appObjects[i][j]->verticesNumber;
 		}
-
-		d3dDev->SetTransform(D3DTS_WORLD, &(appObjects[i]->matScale
-			* appObjects[i]->matRotateX * appObjects[i]->matRotateY * appObjects[i]->matRotateZ
-			* appObjects[i]->matTranslate));
-
-		MatrixBufferType vertexShaderData;
-
-		D3DXMATRIX matWorld = appObjects[i]->matScale
-			* appObjects[i]->matRotateX * appObjects[i]->matRotateY * appObjects[i]->matRotateZ
-			* appObjects[i]->matTranslate;
-		vertexShaderData.projection = matProjection;
-		vertexShaderData.world = matWorld;
-		vertexShaderData.view = matView;
-
-		D3DXMatrixTranspose(&matWorld, &matWorld);
-
-		d3dDev->SetVertexShaderConstantF(0, matWorld, 4);
-
-		d3dDev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, vertexPosition, 0, appObjects[i]->verticesNumber, 0, appObjects[i]->trianglesNumber);
-		vertexPosition += appObjects[i]->verticesNumber;
 	}
-
-
 
 	d3dDev->EndScene();
 	d3dDev->Present(0, 0, 0, 0);

@@ -12,10 +12,11 @@ public:
 	/* Initiallize D3D device. if d3dParams is NULL default parameters are used. */
 	virtual HRESULT InitGraphics(D3DPRESENT_PARAMETERS *d3dParams);
 	/* Initiallize vertex and index buffers. Vertex buffer size is counted in bytes, index buffer size in number of elems. */
-	virtual HRESULT InitBuffers(int _vertexBufferSize, DWORD vertexBufferType, int indexBufferSize);
+	virtual HRESULT InitBuffers(int _vertexBufferSize[], DWORD vertexBufferType[], 
+		unsigned short vertexBuffersNum,  int indexBufferSize);
 	/* Fill vertex buffer with WorldObject structure vertices and internally fill index buffers based on objectType param. 
 	Supports triangles, rects and cuboids (Override to support more specific shapes of objects). */
-	virtual void FillBuffers(vector<WorldObject*> &appObjects);
+	virtual void FillBuffers(vector<vector<WorldObject*>> &appObjects);
 
 protected:
 	/* Should be defined for every application. 
@@ -29,19 +30,14 @@ protected:
 	/* D3D device Interface. */
 	IDirect3DDevice9 *d3dDev;
 	/* Stores all vertices used in application. Filled in FillBuffers function. */
-	IDirect3DVertexBuffer9 *vertexBuffer;
+	vector<VertexBuffer> vertexBuffers;
+	/* Stores all vertices used in application. Filled in FillBuffers function. */
 	/* Stores drawing path indices for every object used in application. */
 	IDirect3DIndexBuffer9 *indexBuffer;
-	DWORD vertexBufferType;
-	/* Size of vertices(single). Counted in InitBuffers function based on given vertex buffer type.*/
-	int verticesSize;
-	/* Current write location in vertex buffer(tail), Used in Fillbuffers function. */
-	int vertexBufferWriteLocation;
-	int vertexBufferSize;
 	/* Current write location in index buffer(tail), Used in Fillbuffers function. */
 	int indexBufferWriteIndex;
 	int indexBufferSize;
-	vector<WorldObject*> appObjects;
+	vector<vector<WorldObject*>> appObjects;
 	D3DXMATRIX matProjection;
 	D3DXMATRIX matView;
 };

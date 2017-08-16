@@ -45,29 +45,40 @@ HRESULT D3DApplication::InitGraphics(D3DPRESENT_PARAMETERS *d3dParams)
 	return ret;
 }
 
-HRESULT D3DApplication::InitBuffers(int _vertexBufferSize, DWORD _vertexBufferType, int _indexBufferSize)
+HRESULT D3DApplication::InitBuffers(int _vertexBufferSize[], DWORD _vertexBufferType[], 
+									unsigned short vertexBuffersNum, int _indexBufferSize)
 {
 	HRESULT ret;
 
-	vertexBufferType = _vertexBufferType;
-	vertexBufferSize = _vertexBufferSize;
+	/*vertexBufferType = _vertexBufferType;
+	vertexBufferSize = _vertexBufferSize;*/
 	indexBufferSize = _indexBufferSize;
-	ret = d3dDev->CreateVertexBuffer(vertexBufferSize, 0, vertexBufferType, D3DPOOL_MANAGED, &vertexBuffer, NULL);
-	vertexBufferWriteLocation = 0;
-	
-	ret = d3dDev->CreateIndexBuffer(indexBufferSize*sizeof(short), 0, D3DFMT_INDEX16, D3DPOOL_MANAGED, &indexBuffer, NULL);
+	ret = d3dDev->CreateIndexBuffer(indexBufferSize * sizeof(short), 0, D3DFMT_INDEX16, D3DPOOL_MANAGED, &indexBuffer, NULL);
 	indexBufferWriteIndex = 0;
 
-	switch (vertexBufferType)
+	for (unsigned int i = 0; i < vertexBuffersNum; i++)
 	{
-	case D3DFVF_XYZ | D3DFVF_DIFFUSE:
-		verticesSize = sizeof(V_XYZ_COL);
-		break;
-	case D3DFVF_XYZ | D3DFVF_TEX1:
-		verticesSize = sizeof(V_XYZ_TEX);
-	}
-	
+		vertexBuffers.push_back(VertexBuffer());
 
+		vertexBuffers[i].size = _vertexBufferSize[i];
+		vertexBuffers[i].type = _vertexBufferType[i];
+
+		ret = d3dDev->CreateVertexBuffer(_vertexBufferSize[i], 0, _vertexBufferType[i], D3DPOOL_MANAGED, &vertexBuffers[i].data, NULL);
+		vertexBuffers[i].tail = 0;
+
+		switch (_vertexBufferType[i])
+		{
+			case D3DFVF_XYZ | D3DFVF_DIFFUSE:
+				vertexBuffers[i].verticesSize = sizeof(V_XYZ_DIFFUSE);
+				break;
+			case D3DFVF_XYZ | D3DFVF_TEX1:
+				vertexBuffers[i].verticesSize = sizeof(V_XYZ_TEX);
+				break;
+			case D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1:
+				vertexBuffers[i].verticesSize = sizeof(V_XYZN_DIFFUSE_TEX);
+		}
+
+	}
 	return ret;
 }
 
@@ -79,9 +90,6 @@ void D3DApplication::Render()
 	
 	d3dDev->BeginScene();
 
-	d3dDev->SetFVF(vertexBufferType);
-
-	d3dDev->SetStreamSource(0, vertexBuffer, 0, verticesSize);
 	d3dDev->SetIndices(indexBuffer);
 
 	D3DXMatrixLookAtLH(&matView,
@@ -99,18 +107,21 @@ void D3DApplication::Render()
 
 	d3dDev->SetTransform(D3DTS_PROJECTION, &matProjection);    // set the projection
 
-
-
-	int vertexPosition = 0;
-
 	for(unsigned int i = 0; i < appObjects.size(); i++)
 	{
-		
-		d3dDev->SetTransform(D3DTS_WORLD, &(appObjects[i]->matScale 
-			* appObjects[i]->matRotateX * appObjects[i]->matRotateY * appObjects[i]->matRotateZ
-			* appObjects[i]->matTranslate));
-		d3dDev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, vertexPosition, 0, appObjects[i]->verticesNumber, 0, appObjects[i]->trianglesNumber);
-		vertexPosition += appObjects[i]->verticesNumber;
+		int vertexPosition = 0;
+		d3dDev->SetFVF(vertexBuffers[i].type);
+
+		d3dDev->SetStreamSource(0, vertexBuffers[i].data, 0, vertexBuffers[i].verticesSize);
+
+		for (unsigned int j = 0; j < appObjects[i].size(); j++)
+		{
+			d3dDev->SetTransform(D3DTS_WORLD, &(appObjects[i][j]->matScale
+				* appObjects[i][j]->matRotateX * appObjects[i][j]->matRotateY * appObjects[i][j]->matRotateZ
+				* appObjects[i][j]->matTranslate));
+			d3dDev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, vertexPosition, 0, appObjects[i][j]->verticesNumber, 0, appObjects[i][j]->trianglesNumber);
+			vertexPosition += appObjects[i][j]->verticesNumber;
+		}
 	}
 
 	d3dDev->EndScene();
@@ -122,7 +133,7 @@ LRESULT CALLBACK D3DApplication::MsgProc(HWND hWnd, UINT message, WPARAM wParam,
 	return ApplicationMain::MsgProc(hWnd, message, wParam, lParam);
 }
 
-void D3DApplication::FillBuffers(vector<WorldObject*> &_appObjects)
+void D3DApplication::FillBuffers(vector<vector<WorldObject*>> &_appObjects)
 {
 	appObjects = _appObjects;
 
@@ -173,44 +184,47 @@ void D3DApplication::FillBuffers(vector<WorldObject*> &_appObjects)
 
 	for(unsigned int i = 0; i < appObjects.size(); i++)
 	{
-		appObjects[i]->indexBufferPosition = indexBufferWriteIndex;
-
-		vertexBuffer->Lock(vertexBufferWriteLocation, 0, (void**)&tmp, 0);
-		memcpy(tmp, appObjects[i]->vertices, appObjects[i]->verticesNumber * verticesSize);
-		vertexBuffer->Unlock();
-		
-		vertexBufferWriteLocation = (vertexBufferWriteLocation >= vertexBufferSize) ? 0 
-				: vertexBufferWriteLocation + appObjects[i]->verticesNumber * verticesSize;
-
-		switch(appObjects[i]->objectType)
+		for (unsigned int j = 0; j < appObjects[i].size(); j++)
 		{
-		case TRIANGLE:
-			indexBuffer->Lock(indexBufferWriteIndex, 0, (void**)&tmp, 0);
-			memcpy(tmp, indices2, sizeof(indices2));
-			indexBuffer->Unlock();
+			appObjects[i][j]->indexBufferPosition = indexBufferWriteIndex;
 
-			appObjects[i]->trianglesNumber = 1;
-			indexBufferWriteIndex = (indexBufferWriteIndex >= indexBufferSize) ? 0 : indexBufferWriteIndex + sizeof(indices2);
-			
-			break;
-		case RECTANGLE:
-			indexBuffer->Lock(indexBufferWriteIndex, 0, (void**)&tmp, 0);
-			memcpy(tmp, indices, sizeof(indices));
-			indexBuffer->Unlock();
+			vertexBuffers[i].data->Lock(vertexBuffers[i].tail, 0, (void**)&tmp, 0);
+			memcpy(tmp, appObjects[i][j]->vertices, appObjects[i][j]->verticesNumber * vertexBuffers[i].verticesSize);
+			vertexBuffers[i].data->Unlock();
 
-			appObjects[i]->trianglesNumber = 2;
-			indexBufferWriteIndex = (indexBufferWriteIndex >= indexBufferSize*sizeof(short)) ? 0 : indexBufferWriteIndex + sizeof(indices);
+			vertexBuffers[i].tail = (vertexBuffers[i].tail >= vertexBuffers[i].size) ? 0
+				: vertexBuffers[i].tail + appObjects[i][j]->verticesNumber * vertexBuffers[i].verticesSize;
 
-			break;
-		case CUBOID:
-			indexBuffer->Lock(indexBufferWriteIndex, 0, (void**)&tmp, 0);
-			memcpy(tmp, indicesCuboid, sizeof(indicesCuboid));
-			indexBuffer->Unlock();
+			switch (appObjects[i][j]->objectType)
+			{
+			case TRIANGLE:
+				indexBuffer->Lock(indexBufferWriteIndex, 0, (void**)&tmp, 0);
+				memcpy(tmp, indices2, sizeof(indices2));
+				indexBuffer->Unlock();
 
-			appObjects[i]->trianglesNumber = 12;
-			indexBufferWriteIndex = (indexBufferWriteIndex >= indexBufferSize*sizeof(short)) ? 0 : indexBufferWriteIndex + sizeof(indicesCuboid);
+				appObjects[i][j]->trianglesNumber = 1;
+				indexBufferWriteIndex = (indexBufferWriteIndex >= indexBufferSize) ? 0 : indexBufferWriteIndex + sizeof(indices2);
 
-			break;
+				break;
+			case RECTANGLE:
+				indexBuffer->Lock(indexBufferWriteIndex, 0, (void**)&tmp, 0);
+				memcpy(tmp, indices, sizeof(indices));
+				indexBuffer->Unlock();
+
+				appObjects[i][j]->trianglesNumber = 2;
+				indexBufferWriteIndex = (indexBufferWriteIndex >= indexBufferSize * sizeof(short)) ? 0 : indexBufferWriteIndex + sizeof(indices);
+
+				break;
+			case CUBOID:
+				indexBuffer->Lock(indexBufferWriteIndex, 0, (void**)&tmp, 0);
+				memcpy(tmp, indicesCuboid, sizeof(indicesCuboid));
+				indexBuffer->Unlock();
+
+				appObjects[i][j]->trianglesNumber = 12;
+				indexBufferWriteIndex = (indexBufferWriteIndex >= indexBufferSize * sizeof(short)) ? 0 : indexBufferWriteIndex + sizeof(indicesCuboid);
+
+				break;
+			}
 		}
 	}
 

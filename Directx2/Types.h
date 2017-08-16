@@ -13,7 +13,7 @@ struct V_XYZ
 	float x, y, z;
 };
 
-struct V_XYZ_TEX : public V_XYZ
+typedef struct V_XYZ_TEX : public V_XYZ
 {
 	float u, v;
 
@@ -26,19 +26,40 @@ struct V_XYZ_TEX : public V_XYZ
 		v = _v;
 	}
 
-};
+} V_XYZ_TEX, D3DVertex1;
 
-struct V_XYZ_COL
+typedef struct V_XYZ_DIFFUSE : public V_XYZ
 {
-	float x, y, z;
-	D3DCOLOR color;
-};
+	D3DCOLOR diffuse;
 
-struct V_XYZ_N_COL: public V_XYZ
+	V_XYZ_DIFFUSE(float _x, float _y, float _z, D3DCOLOR _diffuse)
+	{
+		x = _x;
+		y = _y;
+		z = _z;
+		diffuse = _diffuse;
+	}
+} V_XYZ_DIFFUSE, D3DVertex2;
+
+typedef struct V_XYZN_DIFFUSE_TEX: public V_XYZ
 {
-	D3DVECTOR normal;
-	D3DCOLOR color;
-};
+	float nx, ny, nz;
+	D3DCOLOR diffuse;
+	float u, v;
+
+	V_XYZN_DIFFUSE_TEX(float _x, float _y, float _z, float _nx, float _ny, float _nz, D3DCOLOR _diffuse, float _u, float _v)
+	{
+		x = _x;
+		y = _y;
+		z = _z;
+		nx = _nx;
+		ny = _ny;
+		nz = _nz;
+		diffuse = _diffuse;
+		u = _u;
+		v = _v;
+	}
+} V_XYZN_DIFFUSE_TEX, D3DVertex0;
 
 struct V_XYZ_TEX_COL : public V_XYZ
 {
@@ -80,19 +101,22 @@ typedef struct WorldObject
 } WorldObject;
 
 
-typedef struct Position
+/* Vertex Buffer struct.
+   Members:
+	data - actual vertex buffer data
+	type - vertex buffer type (FVF)
+	size - buffer size (in bytes)
+	tail - current write location (offset in bytes)
+	verticesSize - Size of single vertex in buffer 
+*/
+struct VertexBuffer
 {
-	float x, y, z;
-	Direction direction;
-
-	Position(float _x, float _y, float _z, Direction _direction)
-	{
-		x = _x;
-		y = _y;
-		z = _z;
-		direction = _direction;
-	}
-} Position;
+	IDirect3DVertexBuffer9 *data;
+	DWORD type;
+	unsigned int size;
+	unsigned int tail;
+	unsigned int verticesSize;
+};
 
 
 struct MatrixBufferType
