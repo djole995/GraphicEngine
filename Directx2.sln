@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Directx2", "Directx2\Directx2.vcxproj", "{A3B92249-6741-4B39-B98D-5F8C65A6BF9F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A3B92249-6741-4B39-B98D-5F8C65A6BF9F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A3B92249-6741-4B39-B98D-5F8C65A6BF9F}.Debug|Win32.Build.0 = Debug|Win32
+		{A3B92249-6741-4B39-B98D-5F8C65A6BF9F}.Release|Win32.ActiveCfg = Release|Win32
+		{A3B92249-6741-4B39-B98D-5F8C65A6BF9F}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
