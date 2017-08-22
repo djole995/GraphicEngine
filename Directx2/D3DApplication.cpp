@@ -50,8 +50,6 @@ HRESULT D3DApplication::InitBuffers(int _vertexBufferSize[], DWORD _vertexBuffer
 {
 	HRESULT ret;
 
-	/*vertexBufferType = _vertexBufferType;
-	vertexBufferSize = _vertexBufferSize;*/
 	indexBufferSize = _indexBufferSize;
 	ret = d3dDev->CreateIndexBuffer(indexBufferSize * sizeof(short), 0, D3DFMT_INDEX16, D3DPOOL_MANAGED, &indexBuffer, NULL);
 	indexBufferWriteIndex = 0;
@@ -150,7 +148,7 @@ void D3DApplication::FillBuffers(vector<vector<WorldObject*>> &_appObjects)
 		0, 1, 2
 	};
 
-	/*short indicesCuboid[] =
+	short indicesCuboid[] =
 	{
 		0, 1, 2,    // side 1
 		2, 1, 3,
@@ -164,9 +162,9 @@ void D3DApplication::FillBuffers(vector<vector<WorldObject*>> &_appObjects)
 		0, 5, 1,
 		3, 7, 2,    // side 6
 		2, 7, 6,
-	};*/
+	};
 
-	short indicesCuboid[] =
+	short indicesCuboidTexture[] =
 	{
 		0, 1, 2,    // side 1
 		2, 1, 3,
@@ -186,7 +184,7 @@ void D3DApplication::FillBuffers(vector<vector<WorldObject*>> &_appObjects)
 	{
 		for (unsigned int j = 0; j < appObjects[i].size(); j++)
 		{
-			appObjects[i][j]->indexBufferPosition = indexBufferWriteIndex;
+			appObjects[i][j]->indexBufferPosition = indexBufferWriteIndex/sizeof(short);
 
 			vertexBuffers[i].data->Lock(vertexBuffers[i].tail, 0, (void**)&tmp, 0);
 			memcpy(tmp, appObjects[i][j]->vertices, appObjects[i][j]->verticesNumber * vertexBuffers[i].verticesSize);
@@ -217,11 +215,19 @@ void D3DApplication::FillBuffers(vector<vector<WorldObject*>> &_appObjects)
 				break;
 			case CUBOID:
 				indexBuffer->Lock(indexBufferWriteIndex, 0, (void**)&tmp, 0);
-				memcpy(tmp, indicesCuboid, sizeof(indicesCuboid));
+				/* Cuboid indices are different for vertices with textures and vertices without textures */
+				if ((vertexBuffers[i].type & D3DFVF_TEX1) == D3DFVF_TEX1)
+				{
+					memcpy(tmp, indicesCuboidTexture, sizeof(indicesCuboidTexture));
+				}
+				else
+				{
+					memcpy(tmp, indicesCuboid, sizeof(indicesCuboid));
+				}
 				indexBuffer->Unlock();
 
 				appObjects[i][j]->trianglesNumber = 12;
-				indexBufferWriteIndex = (indexBufferWriteIndex >= indexBufferSize * sizeof(short)) ? 0 : indexBufferWriteIndex + sizeof(indicesCuboid);
+				indexBufferWriteIndex = (indexBufferWriteIndex >= indexBufferSize * sizeof(short)) ? 0 : indexBufferWriteIndex + sizeof(indicesCuboidTexture);
 
 				break;
 			}

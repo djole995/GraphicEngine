@@ -19,14 +19,14 @@ D3DVertex0 rect[] =
 
 V_XYZ_DIFFUSE cubeVertices[] = 
 {
-	{ -3.0f, 3.0f, -5.0f, D3DCOLOR_XRGB(0, 0, 255) },
-    { 3.0f, 3.0f, -5.0f, D3DCOLOR_XRGB(0, 255, 0) },
-    { -3.0f, -3.0f, -5.0f, D3DCOLOR_XRGB(255, 0, 0) },
-    { 3.0f, -3.0f, -5.0f, D3DCOLOR_XRGB(0, 255, 255) },
-    { -3.0f, 3.0f, 1.0f, D3DCOLOR_XRGB(0, 0, 255) },
-    { 3.0f, 3.0f, 1.0f, D3DCOLOR_XRGB(255, 0, 0) },
-    { -3.0f, -3.0f, 1.0f, D3DCOLOR_XRGB(0, 255, 0) },
-    { 3.0f, -3.0f, 1.0f, D3DCOLOR_XRGB(0, 255, 255) }
+	{ -1.0f, 1.0f, -3.0f, D3DCOLOR_XRGB(0, 0, 255) },
+    { 1.0f, 1.0f, -3.0f, D3DCOLOR_XRGB(0, 255, 0) },
+    { -1.0f, -1.0f, -3.0f, D3DCOLOR_XRGB(255, 0, 0) },
+    { 1.0f, -1.0f, -3.0f, D3DCOLOR_XRGB(0, 255, 255) },
+    { -1.0f, 1.0f, 0.0f, D3DCOLOR_XRGB(0, 0, 255) },
+    { 1.0f, 1.0f, 0.0f, D3DCOLOR_XRGB(255, 0, 0) },
+    { -1.0f, -1.0f, 0.0f, D3DCOLOR_XRGB(0, 255, 0) },
+    { 1.0f, -1.0f, 0.0f, D3DCOLOR_XRGB(0, 255, 255) }
 };
 
 V_XYZ_DIFFUSE rectVertices3[] = 

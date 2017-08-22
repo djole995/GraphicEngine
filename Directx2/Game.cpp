@@ -194,9 +194,11 @@ void Game::Render()
 
 	int vertexPosition = 0;
 
-	d3dDev->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+	/* Should uncomment (and modify if needed) when using models with alpha less than 1 
+	to determine influence of both object itself and user defined alpha on resulting transparency.  */
+	/*d3dDev->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
 	d3dDev->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	d3dDev->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	d3dDev->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);*/
 
 	D3DXMatrixTranspose(&matView, &matView);
 	D3DXMatrixTranspose(&matProjection, &matProjection);
@@ -214,7 +216,7 @@ void Game::Render()
 		for (unsigned int j = 0; j < appObjects[i].size(); j++)
 		{
 			d3dDev->SetTexture(0, gameTextures[appObjects[i][j]->textureIndex]);
-			if (j == 0 && i == 0)
+			if (j == 1 && i == 0)
 			{
 				static float rot = 0;
 				/*appObjects[i]->matRotateX.m[0][0] -= 0.01f;
@@ -229,24 +231,22 @@ void Game::Render()
 				D3DXMatrixTranslation(&(appObjects[i]->matTranslate), cameraLookAtX, 0, zZoom+18);*/
 			}
 
+			/* Only used with default graphic pipeline. Doesn't have any influence when using custom shaders. */
 			d3dDev->SetTransform(D3DTS_WORLD, &(appObjects[i][j]->matScale
 				* appObjects[i][j]->matRotateX * appObjects[i][j]->matRotateY * appObjects[i][j]->matRotateZ
 				* appObjects[i][j]->matTranslate));
 
-			MatrixBufferType vertexShaderData;
-
+			
+			/* Setting global variables for custom shaders. */
 			D3DXMATRIX matWorld = appObjects[i][j]->matScale
 				* appObjects[i][j]->matRotateX * appObjects[i][j]->matRotateY * appObjects[i][j]->matRotateZ
 				* appObjects[i][j]->matTranslate;
-			vertexShaderData.projection = matProjection;
-			vertexShaderData.world = matWorld;
-			vertexShaderData.view = matView;
 
 			D3DXMatrixTranspose(&matWorld, &matWorld);
 
 			d3dDev->SetVertexShaderConstantF(0, matWorld, 4);
 
-			d3dDev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, vertexPosition, 0, appObjects[i][j]->verticesNumber, 0, appObjects[i][j]->trianglesNumber);
+			d3dDev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, vertexPosition, 0, appObjects[i][j]->verticesNumber, appObjects[i][j]->indexBufferPosition, appObjects[i][j]->trianglesNumber);
 			vertexPosition += appObjects[i][j]->verticesNumber;
 		}
 	}
