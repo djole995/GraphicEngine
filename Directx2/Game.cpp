@@ -148,8 +148,8 @@ void Game::Render()
 	}
 	
 
-	//d3dDev->SetVertexShader(v);
-	//d3dDev->SetPixelShader(s);
+	d3dDev->SetVertexShader(v);
+	d3dDev->SetPixelShader(s);
 
 	if (cnt == 1)
 	{
@@ -167,7 +167,7 @@ void Game::Render()
 		}
 	}
 
-	d3dDev->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(90, 90, 255), 1.0f, 0);
+	d3dDev->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 	d3dDev->Clear(0, 0, D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 
 	d3dDev->BeginScene();
@@ -194,17 +194,16 @@ void Game::Render()
 
 	int vertexPosition = 0;
 
-	/* Should uncomment (and modify if needed) when using models with alpha less than 1 
-	to determine influence of both object itself and user defined alpha on resulting transparency.  */
-	/*d3dDev->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
-	d3dDev->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	d3dDev->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);*/
-
 	D3DXMatrixTranspose(&matView, &matView);
 	D3DXMatrixTranspose(&matProjection, &matProjection);
+	static float psCnt[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
 
 	d3dDev->SetVertexShaderConstantF(4, matView, 4);
 	d3dDev->SetVertexShaderConstantF(8, matProjection, 4);
+	d3dDev->SetPixelShaderConstantF(12, psCnt, 1);
+
+	for (unsigned int i = 0; i < 3; i++)
+		psCnt[i] = psCnt[i]+0.001f;
 
 	for (unsigned int i = 0; i < appObjects.size(); i++)
 	{
@@ -215,17 +214,35 @@ void Game::Render()
 
 		for (unsigned int j = 0; j < appObjects[i].size(); j++)
 		{
+			/* Set alphablending for transparent object. */
+			/*if (appObjects[i][j]->textureIndex == 1)
+			{
+				d3dDev->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+				d3dDev->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+				d3dDev->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+			}
+			else*/
+			{
+				d3dDev->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+				d3dDev->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+				d3dDev->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
+			}
+
 			d3dDev->SetTexture(0, gameTextures[appObjects[i][j]->textureIndex]);
+
+			/* Rotate selected object. */
 			if (j == 1 && i == 0)
 			{
 				static float rot = 0;
-				/*appObjects[i]->matRotateX.m[0][0] -= 0.01f;
-				appObjects[i]->matRotateX.m[1][0] -= 0.01f;
-				appObjects[i]->matRotateX.m[2][0] -= 0.01f;*/
+				static float rotDir = 0.001f;
 				D3DXMatrixRotationY(&appObjects[i][j]->matRotateY, rot);
 				D3DXMatrixRotationX(&appObjects[i][j]->matRotateX, rot);
 				D3DXMatrixRotationZ(&appObjects[i][j]->matRotateZ, rot);
-				rot += 0.01f;
+				if(rot >= 0.1f)
+					rotDir = -0.001f;
+				if(rot <= -0.1f)
+					rotDir = 0.001f;
+				rot += rotDir;
 				/*For gun.*/
 				/*D3DXMatrixRotationY(&(appObjects[i]->matRotateX), cameraLookAtX);
 				D3DXMatrixTranslation(&(appObjects[i]->matTranslate), cameraLookAtX, 0, zZoom+18);*/

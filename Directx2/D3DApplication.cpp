@@ -72,6 +72,9 @@ HRESULT D3DApplication::InitBuffers(int _vertexBufferSize[], DWORD _vertexBuffer
 			case D3DFVF_XYZ | D3DFVF_TEX1:
 				vertexBuffers[i].verticesSize = sizeof(V_XYZ_TEX);
 				break;
+			case D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1:
+				vertexBuffers[i].verticesSize = sizeof(V_XYZN_TEX);
+				break;
 			case D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1:
 				vertexBuffers[i].verticesSize = sizeof(V_XYZN_DIFFUSE_TEX);
 		}

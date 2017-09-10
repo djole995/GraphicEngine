@@ -8,6 +8,14 @@ enum Direction { LEFT, RIGHT, UP, DOWN };
 
 enum ObjectType { TRIANGLE, RECTANGLE, CIRCLE, CUBOID, PIRAMID };
 
+/* Supported vertex format constants. */
+const DWORD D3DFVF_VERTEX0 = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1;
+const DWORD D3DFVF_VERTEX1 = D3DFVF_XYZ | D3DFVF_TEX1;
+const DWORD D3DFVF_VERTEX2 = D3DFVF_XYZ | D3DFVF_DIFFUSE;
+const DWORD D3DFVF_VERTEX3 = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1;
+
+
+
 struct V_XYZ
 {
 	float x, y, z;
@@ -27,6 +35,25 @@ typedef struct V_XYZ_TEX : public V_XYZ
 	}
 
 } V_XYZ_TEX, D3DVertex1;
+
+typedef struct V_XYZN_TEX : public V_XYZ
+{
+	float nx, ny, nz;
+	float u, v;
+
+	V_XYZN_TEX(float _x, float _y, float _z, float _nx, float _ny, float _nz, float _u, float _v)
+	{
+		x = _x;
+		y = _y;
+		z = _z;
+		nx = _nx;
+		ny = _ny;
+		nz = _nz;
+		u = _u;
+		v = _v;
+	}
+
+} V_XYZN_TEX, D3DVertex3;
 
 typedef struct V_XYZ_DIFFUSE : public V_XYZ
 {

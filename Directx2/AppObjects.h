@@ -6,14 +6,22 @@ const int TEXTURE_FLOOR = 1;
 /* Number of textures used in application. */
 const int TEXTURES_NUM = 4;
 /* Paths to textures. */
-WCHAR *texturePaths[TEXTURES_NUM] = { L"D://Textures//grasstext.jpg",  L"D://Textures//floor.jpg",   L"D://Textures//piramid.jpg",  L"D://Textures//desert.jpg" };
+WCHAR *texturePaths[TEXTURES_NUM] = { L"..//Textures//desert.jpg",  L"..//Textures//boat.png",   L"..//Textures//piramid.jpg",  L"..//Textures//desert.jpg" };
 
 D3DVertex0 rect[] = 
 {
-	{ -2.0f, -2.0f, 0.0f, 1.0f, 0.0f, 0.0f, D3DCOLOR_XRGB(255, 255, 255) , 1.0f, 1.0f },
-	{ 2.0f, -2.0f, 0.0f, 1.0f, 0.0f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 0.0f, 1.0f },
-	{ -2.0f, 2.0f, 0.0f, 1.0f, 0.0f, 0.0f, D3DCOLOR_XRGB(0, 255, 255), 1.0f, 0.0f },
-	{ 2.0f, 2.0f, 0.0f, 1.0f, 0.0f, 0.0f, D3DCOLOR_XRGB(0, 255, 255), 0.0f, 0.0f }
+	{ -2.0f, -2.0f, 0.0f, 1.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(0, 255, 0, 0) , 1.0f, 1.0f },
+	{ 2.0f, -2.0f, 0.0f, 1.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(0, 255, 0, 0), 0.0f, 1.0f },
+	{ -2.0f, 2.0f, 0.0f, 1.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(0, 255, 0, 0), 1.0f, 0.0f },
+	{ 2.0f, 2.0f, 0.0f, 1.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(0, 255, 0, 0), 0.0f, 0.0f }
+};
+
+D3DVertex1 rect2[] =
+{
+	{ -2.0f, -2.0f, 0.0f, 1.0f, 1.0f },
+	{ 2.0f, -2.0f, 0.0f, 0.0f, 1.0f },
+	{ -2.0f, 2.0f, 0.0f, 1.0f, 0.0f },
+	{ 2.0f, 2.0f, 0.0f, 0.0f, 0.0f }
 };
 
 
@@ -136,12 +144,12 @@ V_XYZ_TEX rectFenceR2[] =
 	{ -1000.0f, -3.0f, -5380.0f, 0.0f, 500.0f },
 };
 
-V_XYZ_TEX rectFenceR[] =
+D3DVertex3 rectFenceR[] =
 {
-	{ -1000.0f, -3.0f, 20.0f, 0.0f, 0.0f },
-	{ 1000.0f, -3.0f, 20.0f, 200.0f, 0.0f },
-	{ 1000.0f, -3.0f, -5380.0f, 200.0f, 200.0f },
-	{ -1000.0f, -3.0f, -5380.0f, 0.0f, 200.0f },
+	{ -1000.0f, -3.0f, 20.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f },
+	{ 1000.0f, -3.0f, 20.0f, 0.0f, 1.0f, 0.0f, 200.0f, 0.0f },
+	{ 1000.0f, -3.0f, -5380.0f, 0.0f, 1.0f, 0.0f, 200.0f, 200.0f },
+	{ -1000.0f, -3.0f, -5380.0f, 0.0f, 1.0f, 0.0f, 0.0f, 200.0f }
 };
 
 V_XYZ_TEX rectFenceL[] =

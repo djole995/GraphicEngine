@@ -32,8 +32,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		MessageBox(NULL, L"Initializing graphics failed.", NULL, MB_OK);
 	}
 
-	int vBuffSize[] = { sizeof(D3DVertex1) * 100, sizeof(D3DVertex1) * 100, sizeof(D3DVertex0) * 100 };
-	DWORD vBuffType[] = { D3DFVF_XYZ | D3DFVF_TEX1, D3DFVF_XYZ | D3DFVF_TEX1,  D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1 };
+	int vBuffSize[] = { sizeof(D3DVertex3) * 100, sizeof(D3DVertex1) * 100, sizeof(D3DVertex0) * 100 };
+	DWORD vBuffType[] = { D3DFVF_VERTEX3, D3DFVF_VERTEX1,  D3DFVF_VERTEX0 };
 
 	if (FAILED(application->InitBuffers(vBuffSize, vBuffType, 3, 300)))
 	{
@@ -86,14 +86,16 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	s = { 1, 1, 1 };
 	r = { 0, 0, 0 };
 
-	worldObjects[0].push_back(new WorldObject(verticesCubeTexture, CUBOID, t, r, s, 24, 0));
+	//worldObjects[0].push_back(new WorldObject(verticesCubeTexture, CUBOID, t, r, s, 24, 2));
 	
 	t.x = 8;
 	t.y = 0;
 	t.z = 0;
-	worldObjects[0].push_back(new WorldObject(verticesCubeTexture, CUBOID, t, r, s, 24, 1));
+	s.z = 5.0;
+	//worldObjects[0].push_back(new WorldObject(verticesCubeTexture, CUBOID, t, r, s, 24, 2));
 	t.x = -8;
-	worldObjects[2].push_back(new WorldObject(rect, RECTANGLE, t, r, s, 4, 1));
+	s = { 2, 2, 2 };
+	//worldObjects[0].push_back(new WorldObject(rect2, RECTANGLE, t, r, s, 4, 1));
 
 
 /*	t.x = 1;
