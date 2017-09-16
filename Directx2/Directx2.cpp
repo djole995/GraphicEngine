@@ -106,6 +106,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	s.z = 0.5f;
 	worldObjects.push_back(new WorldObject(cubeVertices, CUBOID, t, r, s, 8));*/
 
+	//D3DXLoadMeshFromX()
+
 	application->FillBuffers(worldObjects);
 
 	appRetValue = application->Run();

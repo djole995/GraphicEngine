@@ -1,5 +1,5 @@
 
-struct PS_INPUT
+struct PixelInputType
 {
 	float4 position : SV_POSITION;
     float2 UV : TEXCOORD0;
@@ -18,7 +18,7 @@ sampler2D ColorSampler = sampler_state
 
 float4 cnt : register(c12);
 
-float4 main(PS_INPUT input) : COLOR
+float4 main(PixelInputType input) : COLOR
 {
    /* float fogFactor = (distance(float2(1366 / 2, 768 / 2), float2(input.position.x, input.position.y))) / 10;
 
@@ -33,7 +33,7 @@ float4 main(PS_INPUT input) : COLOR
 
     // Invert the light direction for calculations.
     float3 lightDir = -lightDirection;
-    float4 lightDiffuseColor = float4(1.0f, 1.0f, 0.0f, 1.0f);
+    float4 lightDiffuseColor = float4(1.0f, 1.0f, 0.6f, 1.0f);
 
     // Calculate the amount of light on this pixel.
     lightIntensity = saturate(dot(input.normal, lightDir));

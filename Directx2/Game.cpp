@@ -119,6 +119,64 @@ HRESULT Game::LoadTextures(WCHAR *filesArr[], unsigned short texturesNum)
 	return ret;
 }
 
+/* Added just for mesh load testing. Loading hardcoded mesh. 
+	TODO : add mesh handling API into engine (D3DApplication, Game or separate class). */
+void DrawXFile(IDirect3DDevice9* d3dDev)
+{
+	LPD3DXBUFFER pMtrlBuffer = NULL;
+	DWORD numMaterials;
+	LPD3DXMESH mesh;
+	LPD3DXBUFFER eff;
+
+	// File Name ---------+
+	//                    |
+	//                   \|/
+	//                    |
+	D3DXLoadMeshFromX(L"../Textures/polHouse1.x", D3DXMESH_SYSTEMMEM, d3dDev, NULL, &pMtrlBuffer, &eff, &numMaterials, &mesh);
+
+
+	//Create two arrays. One to hold the materials and only to hold the textures
+	D3DMATERIAL9* pMeshMaterials = new D3DMATERIAL9[numMaterials];
+	LPDIRECT3DTEXTURE9* pMeshTextures = new LPDIRECT3DTEXTURE9[numMaterials];
+	D3DXMATERIAL* matMaterials = (D3DXMATERIAL*)pMtrlBuffer->GetBufferPointer();
+	// Loads of allocation etc here!
+	for(DWORD i = 0; i < numMaterials; i++)
+	{
+		//Copy the material
+		pMeshMaterials[i] = matMaterials[i].MatD3D;
+		//Set the ambient color for the material (D3DX does not do this)
+		pMeshMaterials[i].Ambient = pMeshMaterials[i].Diffuse;
+
+		//Create the texture
+		if (FAILED(D3DXCreateTextureFromFile(d3dDev,
+			L"../Textures/phouse_d.jpg",
+			&pMeshTextures[i])))
+		{
+			pMeshTextures[i] = NULL;
+		};
+	}
+
+	// Actually drawing something here!
+	for (DWORD i = 0; i < numMaterials; i++)
+	{
+		d3dDev->SetMaterial(&pMeshMaterials[i]);
+		d3dDev->SetTexture(0, pMeshTextures[i]);
+
+		mesh->DrawSubset(i);
+	}
+
+	// Tidy up!
+	for (DWORD i = 0; i < numMaterials; i++)
+	{
+		if (pMeshTextures[i] != NULL)
+			pMeshTextures[i]->Release();
+	}
+	delete[] pMeshMaterials;
+	delete[] pMeshTextures;
+	pMtrlBuffer->Release();
+	mesh->Release();  // ** BUG FIX!  DONT FORGET TO RELEASE RESOURCES
+}
+
 void Game::Render()
 {
 	static D3DCAPS9 caps;
@@ -130,7 +188,6 @@ void Game::Render()
 	static LPD3DXBUFFER buffV;
 	static LPD3DXBUFFER pixelShader;
 	static LPD3DXBUFFER vertexShader;
-	//static ID3DXEffect *effect = NULL;
 
 	if (cnt == 0)
 	{
@@ -143,7 +200,6 @@ void Game::Render()
 		d3dDev->GetVertexShader(&v);
 		d3dDev->CreatePixelShader((DWORD*)pixelShader->GetBufferPointer(), &s);
 		d3dDev->CreateVertexShader((DWORD*)vertexShader->GetBufferPointer(), &v);
-		//D3DXCreateEffectFromFileA(d3dDev, "Blinn.fx", 0, 0, 0, 0, &effect, 0);
 		cnt = 1;
 	}
 	
@@ -190,7 +246,8 @@ void Game::Render()
 
 	d3dDev->SetTransform(D3DTS_PROJECTION, &matProjection);    // set the projection
 
-
+	// Test drawing hardcoded input mesh.
+	DrawXFile(d3dDev);
 
 	int vertexPosition = 0;
 
