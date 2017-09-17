@@ -128,10 +128,6 @@ void DrawXFile(IDirect3DDevice9* d3dDev)
 	LPD3DXMESH mesh;
 	LPD3DXBUFFER eff;
 
-	// File Name ---------+
-	//                    |
-	//                   \|/
-	//                    |
 	D3DXLoadMeshFromX(L"../Textures/polHouse1.x", D3DXMESH_SYSTEMMEM, d3dDev, NULL, &pMtrlBuffer, &eff, &numMaterials, &mesh);
 
 
@@ -155,6 +151,11 @@ void DrawXFile(IDirect3DDevice9* d3dDev)
 			pMeshTextures[i] = NULL;
 		};
 	}
+
+	D3DXMATRIX translateMat;
+	// Translate mesh model
+	D3DXMatrixTranslation(&translateMat, 0, 0, -100);
+	d3dDev->SetTransform(D3DTS_WORLD, &translateMat);
 
 	// Actually drawing something here!
 	for (DWORD i = 0; i < numMaterials; i++)
@@ -204,8 +205,8 @@ void Game::Render()
 	}
 	
 
-	d3dDev->SetVertexShader(v);
-	d3dDev->SetPixelShader(s);
+	//d3dDev->SetVertexShader(v);
+	//d3dDev->SetPixelShader(s);
 
 	if (cnt == 1)
 	{
