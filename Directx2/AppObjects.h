@@ -3,10 +3,12 @@
 /* Texture indices macros. */
 const int TEXTURE_GRASS = 0;
 const int TEXTURE_FLOOR = 1;
-/* Number of textures used in application. */
+/* Number of textures and mesh models used in application. */
 const int TEXTURES_NUM = 4;
-/* Paths to textures. */
+const int MESH_MODELS_NUM = 1;
+/* Paths to textures and mesh models. */
 WCHAR *texturePaths[TEXTURES_NUM] = { L"..//Textures//desert.jpg",  L"..//Textures//boat.png",   L"..//Textures//piramid.jpg",  L"..//Textures//desert.jpg" };
+WCHAR *meshPaths[MESH_MODELS_NUM] = { L"../Textures/polHouse1.x" };
 
 D3DVertex0 rect[] = 
 {

@@ -102,6 +102,7 @@
     <ClInclude Include="ApplicationMain.h" />
     <ClInclude Include="AppObjects.h" />
     <ClInclude Include="D3DApplication.h" />
+    <ClInclude Include="D3DMesh.h" />
     <ClInclude Include="Directx2.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Resource.h" />
@@ -112,6 +113,7 @@
   <ItemGroup>
     <ClCompile Include="ApplicationMain.cpp" />
     <ClCompile Include="D3DApplication.cpp" />
+    <ClCompile Include="D3DMesh.cpp" />
     <ClCompile Include="Directx2.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -123,6 +125,14 @@
     <ResourceCompile Include="Directx2.rc" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="DefaultPixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="DefaultVertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+    </FxCompile>
     <FxCompile Include="PixelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>

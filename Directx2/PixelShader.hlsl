@@ -16,8 +16,6 @@ sampler2D ColorSampler = sampler_state
 	AddressV = WRAP;
 };
 
-float4 cnt : register(c12);
-
 float4 main(PixelInputType input) : COLOR
 {
    /* float fogFactor = (distance(float2(1366 / 2, 768 / 2), float2(input.position.x, input.position.y))) / 10;

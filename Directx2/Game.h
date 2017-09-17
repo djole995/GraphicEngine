@@ -1,5 +1,7 @@
 #pragma once
 #include "D3DApplication.h"
+#include "D3DMesh.h"
+
 class Game : public D3DApplication
 {
 	public:
@@ -15,10 +17,12 @@ class Game : public D3DApplication
 		*/
 		virtual HRESULT LoadTextures(WCHAR *filesArr[], unsigned short texturesNum);
 
+		virtual HRESULT LoadMeshModels(WCHAR *filesArr[], unsigned short modelsNum);
+
 	protected:
 		/* Overrride */
 		virtual void Render();
 		IDirect3DTexture9 **gameTextures;
-
+		vector<D3DMesh*> appMeshModels;
 };
 

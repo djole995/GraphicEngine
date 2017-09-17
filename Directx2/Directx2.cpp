@@ -108,6 +108,12 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
 	application->FillBuffers(worldObjects);
 
+	if (FAILED(application->LoadMeshModels(meshPaths, 1)))
+	{
+		MessageBox(NULL, L"Loading mesh models failed.", L"Error", MB_OK);
+		return -1;
+	}
+
 	appRetValue = application->Run();
 
 	return 0;

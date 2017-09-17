@@ -20,7 +20,12 @@ Game::Game(HINSTANCE hInstance, const unsigned long _IDSAppTittle, const unsigne
 
 Game::~Game()
 {
+	for (unsigned int i = 0; i < appMeshModels.size(); i++)
+		delete appMeshModels[i];
 
+	for (unsigned int i = 0; i < appObjects.size(); i++)
+		for(unsigned j = 0; j < appObjects[i].size(); j++)
+			delete appObjects[i][j];
 }
 
 LRESULT Game::MsgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -119,63 +124,17 @@ HRESULT Game::LoadTextures(WCHAR *filesArr[], unsigned short texturesNum)
 	return ret;
 }
 
-/* Added just for mesh load testing. Loading hardcoded mesh. 
-	TODO : add mesh handling API into engine (D3DApplication, Game or separate class). */
-void DrawXFile(IDirect3DDevice9* d3dDev)
+HRESULT Game::LoadMeshModels(WCHAR * filesArr[], unsigned short modelsNum)
 {
-	LPD3DXBUFFER pMtrlBuffer = NULL;
-	DWORD numMaterials;
-	LPD3DXMESH mesh;
-	LPD3DXBUFFER eff;
-
-	D3DXLoadMeshFromX(L"../Textures/polHouse1.x", D3DXMESH_SYSTEMMEM, d3dDev, NULL, &pMtrlBuffer, &eff, &numMaterials, &mesh);
-
-
-	//Create two arrays. One to hold the materials and only to hold the textures
-	D3DMATERIAL9* pMeshMaterials = new D3DMATERIAL9[numMaterials];
-	LPDIRECT3DTEXTURE9* pMeshTextures = new LPDIRECT3DTEXTURE9[numMaterials];
-	D3DXMATERIAL* matMaterials = (D3DXMATERIAL*)pMtrlBuffer->GetBufferPointer();
-	// Loads of allocation etc here!
-	for(DWORD i = 0; i < numMaterials; i++)
+	HRESULT ret;
+	for (unsigned int i = 0; i < modelsNum; i++)
 	{
-		//Copy the material
-		pMeshMaterials[i] = matMaterials[i].MatD3D;
-		//Set the ambient color for the material (D3DX does not do this)
-		pMeshMaterials[i].Ambient = pMeshMaterials[i].Diffuse;
-
-		//Create the texture
-		if (FAILED(D3DXCreateTextureFromFile(d3dDev,
-			L"../Textures/phouse_d.jpg",
-			&pMeshTextures[i])))
-		{
-			pMeshTextures[i] = NULL;
-		};
+		appMeshModels.push_back(new D3DMesh(d3dDev));
+		if (FAILED(ret = appMeshModels[i]->LoadMesh(filesArr[i])))
+			return ret;
 	}
 
-	D3DXMATRIX translateMat;
-	// Translate mesh model
-	D3DXMatrixTranslation(&translateMat, 0, 0, -100);
-	d3dDev->SetTransform(D3DTS_WORLD, &translateMat);
-
-	// Actually drawing something here!
-	for (DWORD i = 0; i < numMaterials; i++)
-	{
-		d3dDev->SetMaterial(&pMeshMaterials[i]);
-		d3dDev->SetTexture(0, pMeshTextures[i]);
-
-		mesh->DrawSubset(i);
-	}
-
-	// Tidy up!
-	for (DWORD i = 0; i < numMaterials; i++)
-	{
-		if (pMeshTextures[i] != NULL)
-			pMeshTextures[i]->Release();
-	}
-	delete[] pMeshMaterials;
-	delete[] pMeshTextures;
-	pMtrlBuffer->Release();
-	mesh->Release();  // ** BUG FIX!  DONT FORGET TO RELEASE RESOURCES
+	return D3D_OK;
 }
 
 void Game::Render()
@@ -183,6 +142,7 @@ void Game::Render()
 	static D3DCAPS9 caps;
 	static int cnt = 0;
 
+	/* TODO: Implement API out of render function for loading and setting PS and VS based on shader source path. */
 	static IDirect3DPixelShader9 *s;
 	static IDirect3DVertexShader9 *v;
 	static LPD3DXBUFFER buffS;
@@ -192,9 +152,9 @@ void Game::Render()
 
 	if (cnt == 0)
 	{
-		D3DXCompileShaderFromFile(L"PixelShader.hlsl", NULL, NULL, "main", D3DXGetPixelShaderProfile(d3dDev), 0, &pixelShader,
+		D3DXCompileShaderFromFile(L"DefaultPixelShader.hlsl", NULL, NULL, "main", D3DXGetPixelShaderProfile(d3dDev), 0, &pixelShader,
 			&buffS, NULL);
-		D3DXCompileShaderFromFile(L"VertexShader.hlsl", NULL, NULL, "main", D3DXGetVertexShaderProfile(d3dDev), 0, &vertexShader,
+		D3DXCompileShaderFromFile(L"DefaultVertexShader.hlsl", NULL, NULL, "main", D3DXGetVertexShaderProfile(d3dDev), 0, &vertexShader,
 			&buffV, NULL);
 
 		d3dDev->GetPixelShader(&s);
@@ -205,8 +165,8 @@ void Game::Render()
 	}
 	
 
-	//d3dDev->SetVertexShader(v);
-	//d3dDev->SetPixelShader(s);
+	d3dDev->SetVertexShader(v);
+	d3dDev->SetPixelShader(s);
 
 	if (cnt == 1)
 	{
@@ -229,9 +189,6 @@ void Game::Render()
 
 	d3dDev->BeginScene();
 
-
-	d3dDev->SetIndices(indexBuffer);
-
 	D3DXMatrixLookAtLH(&matView,
 		&D3DXVECTOR3(cameraXPos, cameraYPos, zZoom+20.0f),    // the camera position
 		&D3DXVECTOR3(cameraLookAtX+cameraXPos, cameraLookAtY, zZoom+0.0f),    // the look-at position
@@ -247,21 +204,21 @@ void Game::Render()
 
 	d3dDev->SetTransform(D3DTS_PROJECTION, &matProjection);    // set the projection
 
-	// Test drawing hardcoded input mesh.
-	DrawXFile(d3dDev);
-
 	int vertexPosition = 0;
 
 	D3DXMatrixTranspose(&matView, &matView);
 	D3DXMatrixTranspose(&matProjection, &matProjection);
-	static float psCnt[4] = { 0.3f, 0.3f, 0.3f, 1.0f };
 
 	d3dDev->SetVertexShaderConstantF(4, matView, 4);
 	d3dDev->SetVertexShaderConstantF(8, matProjection, 4);
-	d3dDev->SetPixelShaderConstantF(12, psCnt, 1);
 
-	for (unsigned int i = 0; i < 3; i++)
-		psCnt[i] = psCnt[i]+0.001f;
+	/* Render mesh models. */
+	for (unsigned int i = 0; i < appMeshModels.size(); i++)
+		appMeshModels[i]->Draw();
+
+
+	/* Now render custom models placed in vertex buffers. */
+	d3dDev->SetIndices(indexBuffer);
 
 	for (unsigned int i = 0; i < appObjects.size(); i++)
 	{
@@ -301,9 +258,6 @@ void Game::Render()
 				if(rot <= -0.1f)
 					rotDir = 0.001f;
 				rot += rotDir;
-				/*For gun.*/
-				/*D3DXMatrixRotationY(&(appObjects[i]->matRotateX), cameraLookAtX);
-				D3DXMatrixTranslation(&(appObjects[i]->matTranslate), cameraLookAtX, 0, zZoom+18);*/
 			}
 
 			/* Only used with default graphic pipeline. Doesn't have any influence when using custom shaders. */
