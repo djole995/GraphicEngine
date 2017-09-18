@@ -238,3 +238,31 @@ void D3DApplication::FillBuffers(vector<vector<WorldObject*>> &_appObjects)
 	}
 
 }
+
+void D3DApplication::LoadVertexShader(const WCHAR* sourceFileName, const char entryPoint[])
+{
+	LPD3DXBUFFER errorBuffer;
+	LPD3DXBUFFER shaderSource;
+
+	D3DXCompileShaderFromFile(sourceFileName, NULL, NULL, entryPoint, D3DXGetVertexShaderProfile(d3dDev), 0, &shaderSource,
+			&errorBuffer, NULL);
+
+	d3dDev->GetVertexShader(&vertexShader);
+	d3dDev->CreateVertexShader((DWORD*)shaderSource->GetBufferPointer(), &vertexShader);
+	
+	d3dDev->SetVertexShader(vertexShader);
+}
+
+void D3DApplication::LoadPixelShader(const WCHAR* sourceFileName, const char entryPoint[])
+{
+	LPD3DXBUFFER errorBuffer;
+	LPD3DXBUFFER shaderSource;
+
+	D3DXCompileShaderFromFile(sourceFileName, NULL, NULL, entryPoint, D3DXGetPixelShaderProfile(d3dDev), 0, &shaderSource,
+		&errorBuffer, NULL);
+
+	d3dDev->GetPixelShader(&pixelShader);
+	d3dDev->CreatePixelShader((DWORD*)shaderSource->GetBufferPointer(), &pixelShader);
+
+	d3dDev->SetPixelShader(pixelShader);
+}

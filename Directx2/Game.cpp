@@ -142,31 +142,10 @@ void Game::Render()
 	static D3DCAPS9 caps;
 	static int cnt = 0;
 
-	/* TODO: Implement API out of render function for loading and setting PS and VS based on shader source path. */
-	static IDirect3DPixelShader9 *s;
-	static IDirect3DVertexShader9 *v;
-	static LPD3DXBUFFER buffS;
-	static LPD3DXBUFFER buffV;
-	static LPD3DXBUFFER pixelShader;
-	static LPD3DXBUFFER vertexShader;
-
 	if (cnt == 0)
 	{
-		D3DXCompileShaderFromFile(L"../Shaders/PixelShader.hlsl", NULL, NULL, "main", D3DXGetPixelShaderProfile(d3dDev), 0, &pixelShader,
-			&buffS, NULL);
-		D3DXCompileShaderFromFile(L"../Shaders/VertexShader.hlsl", NULL, NULL, "main", D3DXGetVertexShaderProfile(d3dDev), 0, &vertexShader,
-			&buffV, NULL);
-
-		d3dDev->GetPixelShader(&s);
-		d3dDev->GetVertexShader(&v);
-		d3dDev->CreatePixelShader((DWORD*)pixelShader->GetBufferPointer(), &s);
-		d3dDev->CreateVertexShader((DWORD*)vertexShader->GetBufferPointer(), &v);
 		cnt = 1;
 	}
-	
-
-	d3dDev->SetVertexShader(v);
-	d3dDev->SetPixelShader(s);
 
 	if (cnt == 1)
 	{

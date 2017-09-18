@@ -18,6 +18,22 @@ public:
 	Supports triangles, rects and cuboids (Override to support more specific shapes of objects). */
 	virtual void FillBuffers(vector<vector<WorldObject*>> &appObjects);
 
+	/** @brief Loads and sets active pixel shader.
+		
+		@param sourceFileName path to shader source file
+		@param entryPoint name of function which presents entry point of shader program (main function).
+
+	*/
+	virtual void LoadPixelShader(const WCHAR* sourceFileName, const char entryPoint[]);
+
+	/** @brief Loads and sets active vertex shader.
+
+	@param sourceFileName path to shader source file
+	@param entryPoint name of function which presents entry point of shader program (main function).
+
+	*/
+	virtual void LoadVertexShader(const WCHAR* sourceFileName, const char entryPoint[]);
+
 protected:
 	/* Should be defined for every application. 
 	This base realization only draw all objects without setting textures. (Override) */
@@ -40,5 +56,10 @@ protected:
 	vector<vector<WorldObject*>> appObjects;
 	D3DXMATRIX matProjection;
 	D3DXMATRIX matView;
+
+	/* Application vertex shader. If not set Direct3D is used. */
+	IDirect3DVertexShader9* vertexShader;
+	/* Application pixel shader. If not set Direct3D is used. */
+	IDirect3DPixelShader9* pixelShader;
 };
 

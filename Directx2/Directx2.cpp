@@ -106,6 +106,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	s.z = 0.5f;
 	worldObjects.push_back(new WorldObject(cubeVertices, CUBOID, t, r, s, 8));*/
 
+	application->LoadVertexShader(L"../Shaders/DefaultVertexShader.hlsl", "main");
+	application->LoadPixelShader(L"../Shaders/DefaultPixelShader.hlsl", "main");
+
 	application->FillBuffers(worldObjects);
 
 	if (FAILED(application->LoadMeshModels(meshPaths, 1)))
@@ -115,6 +118,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	}
 
 	appRetValue = application->Run();
+
+
+	delete application;
 
 	return 0;
 }
