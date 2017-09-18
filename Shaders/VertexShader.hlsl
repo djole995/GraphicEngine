@@ -3,7 +3,7 @@
 
 matrix worldMatrix : register(c0);
 matrix viewMatrix : register(c4);
-matrix projectionMatrix: register(c8);
+matrix projectionMatrix : register(c8);
 
 
 struct VertexInputType
@@ -24,7 +24,7 @@ struct PixelInputType
 };
 
 
-PixelInputType main( VertexInputType input )
+PixelInputType main(VertexInputType input)
 {
     PixelInputType output;
 

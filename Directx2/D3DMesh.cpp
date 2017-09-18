@@ -67,7 +67,7 @@ void D3DMesh::Draw()
 {
 	D3DXMATRIX translateMat;
 	// Translate mesh model
-	D3DXMatrixTranslation(&translateMat, 0, 0, -100);
+	D3DXMatrixTranslation(&translateMat, 0, -4.0, -100);
 	D3DXMatrixTranspose(&translateMat, &translateMat);
 
 	d3dDev->SetVertexShaderConstantF(0, translateMat, 4);

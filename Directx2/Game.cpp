@@ -152,9 +152,9 @@ void Game::Render()
 
 	if (cnt == 0)
 	{
-		D3DXCompileShaderFromFile(L"DefaultPixelShader.hlsl", NULL, NULL, "main", D3DXGetPixelShaderProfile(d3dDev), 0, &pixelShader,
+		D3DXCompileShaderFromFile(L"../Shaders/PixelShader.hlsl", NULL, NULL, "main", D3DXGetPixelShaderProfile(d3dDev), 0, &pixelShader,
 			&buffS, NULL);
-		D3DXCompileShaderFromFile(L"DefaultVertexShader.hlsl", NULL, NULL, "main", D3DXGetVertexShaderProfile(d3dDev), 0, &vertexShader,
+		D3DXCompileShaderFromFile(L"../Shaders/VertexShader.hlsl", NULL, NULL, "main", D3DXGetVertexShaderProfile(d3dDev), 0, &vertexShader,
 			&buffV, NULL);
 
 		d3dDev->GetPixelShader(&s);
@@ -200,7 +200,7 @@ void Game::Render()
 		D3DXToRadian(60),    // the horizontal field of view
 		1300.0f / 700.0f, // aspect ratio
 		1.0f,    // the near view-plane
-		100.0f);    // the far view-planes
+		500.0f);    // the far view-planes
 
 	d3dDev->SetTransform(D3DTS_PROJECTION, &matProjection);    // set the projection
 
