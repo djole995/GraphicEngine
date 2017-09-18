@@ -45,66 +45,17 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		MessageBox(NULL, L"Loading textures failed.", NULL, MB_OK);
 	}
 
+	// Translate, scale and rotate parameters for objects init. 
 	V_XYZ t = {0, -1, 0};
 	V_XYZ s = {1, 1, 1}; 
 	V_XYZ r = {0, 0, 0};
 	vector<vector<WorldObject*>> worldObjects(3, vector<WorldObject*>());
-
-	t = { 0, 0, 0 };
-	s = { 1, 1, 1 };
-	r = { 0, 0, 0 };
-
-	//worldObjects.push_back(new WorldObject(verticesCubeTexture, CUBOID, t, r, s, 4));
-	/*t.x = 5;
-	worldObjects.push_back(new WorldObject(rectVertices4, RECTANGLE, t, r, s, 4));
-	t.z = 10;
-	worldObjects.push_back(new WorldObject(rectVertices4, RECTANGLE, t, r, s, 4));
-	t.z = 0;
-	t.x = 2;
-	worldObjects.push_back(new WorldObject(rectVertices4, RECTANGLE, t, r, s, 4));
-	t.y = -3;
-	worldObjects.push_back(new WorldObject(triangleVertices1, TRIANGLE, t, r, s, 3));
-	t.x = -10;
-	t.z = 0;
-	t.y = 0;
-	worldObjects.push_back(new WorldObject(triangleVertices1, TRIANGLE, t, r, s, 3));*/
-	//worldObjects[0].push_back(new WorldObject(cubeVertices, CUBOID, t, r, s, 4, 1));
 	
 	t = { 0, -1, 0 };
 	s = { 1, 1, 1 };
 	r = { 0, 0, 0 };
+	// Insert terain
 	worldObjects[0].push_back(new WorldObject(rectFenceR, RECTANGLE, t, r, s, 4, 0));
-	//worldObjects.push_back(new WorldObject(rectTexture, RECTANGLE, t, r, s, 4, 0));
-	t.z = 18;
-	t.y = 0.2f;
-	t.x = 0.1f;
-	//worldObjects.push_back(new WorldObject(rectTexture, RECTANGLE, t, r, s, 4, 0));
-
-
-
-	t = { 0, 0, 0 };
-	s = { 1, 1, 1 };
-	r = { 0, 0, 0 };
-
-	//worldObjects[0].push_back(new WorldObject(verticesCubeTexture, CUBOID, t, r, s, 24, 2));
-	
-	t.x = 8;
-	t.y = 0;
-	t.z = 0;
-	s.z = 5.0;
-	//worldObjects[0].push_back(new WorldObject(verticesCubeTexture, CUBOID, t, r, s, 24, 2));
-	t.x = -8;
-	s = { 2, 2, 2 };
-	//worldObjects[0].push_back(new WorldObject(rect2, RECTANGLE, t, r, s, 4, 1));
-
-
-/*	t.x = 1;
-	t.y = 1;
-	t.z = -10;
-	s.x = 0.5f;
-	s.y = 0.5f;
-	s.z = 0.5f;
-	worldObjects.push_back(new WorldObject(cubeVertices, CUBOID, t, r, s, 8));*/
 
 	application->LoadVertexShader(L"../Shaders/DefaultVertexShader.hlsl", "main");
 	application->LoadPixelShader(L"../Shaders/DefaultPixelShader.hlsl", "main");
