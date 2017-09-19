@@ -21,7 +21,7 @@ float4 main(PixelInputType input) : COLOR
    /* float fogFactor = (distance(float2(1366 / 2, 768 / 2), float2(input.position.x, input.position.y))) / 10;
 
     diffuseColor = lerp(diffuseColor, float4(0.1, 0.1, 0.1, 1.0), float4(fogFactor, fogFactor, fogFactor, fogFactor));*/
-    float3 lightDirection = float3(0.0f, -1.0f, 0.0f);
+    float3 lightDirection = float3(0.0f, -0.7f, -0.7f);
     float lightIntensity;
     float4 color;
 

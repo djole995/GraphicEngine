@@ -124,15 +124,15 @@ HRESULT Game::LoadTextures(WCHAR *filesArr[], unsigned short texturesNum)
 	return ret;
 }
 
-HRESULT Game::LoadMeshModels(WCHAR * filesArr[], unsigned short modelsNum)
+HRESULT Game::LoadMeshModel(WCHAR* XFilePath, LPCWSTR texturesPath[], int x, int y, int z)
 {
 	HRESULT ret;
-	for (unsigned int i = 0; i < modelsNum; i++)
-	{
-		appMeshModels.push_back(new D3DMesh(d3dDev));
-		if (FAILED(ret = appMeshModels[i]->LoadMesh(filesArr[i])))
-			return ret;
-	}
+	D3DMesh *d3dMesh = new D3DMesh(d3dDev, x, y, z);
+
+	if (FAILED(ret = d3dMesh->LoadMesh(XFilePath, texturesPath)))
+		return ret;
+
+	appMeshModels.push_back(d3dMesh);
 
 	return D3D_OK;
 }
@@ -145,11 +145,6 @@ void Game::Render()
 	if (cnt == 0)
 	{
 		cnt = 1;
-	}
-
-	if (cnt == 1)
-	{
-		cnt = 2;
 		if (FAILED(d3dDev->GetDeviceCaps(&caps)))
 		{
 			MessageBox(NULL, L"Failed to retrive device capabilities!", NULL, MB_OK);
@@ -163,7 +158,7 @@ void Game::Render()
 		}
 	}
 
-	d3dDev->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
+	d3dDev->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(50, 100, 100), 1.0f, 0);
 	d3dDev->Clear(0, 0, D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 
 	d3dDev->BeginScene();

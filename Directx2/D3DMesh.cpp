@@ -4,9 +4,14 @@
 #include <iostream>
 
 
-D3DMesh::D3DMesh(IDirect3DDevice9* _d3dDev)
+D3DMesh::D3DMesh(IDirect3DDevice9* _d3dDev, int x, int y, int z)
 {
-	d3dDev = _d3dDev;
+ 	d3dDev = _d3dDev;
+	D3DXMatrixTranslation(&matTranslate, x, y, z);
+	D3DXMatrixIdentity(&matRotateX);
+	D3DXMatrixIdentity(&matRotateY);
+	D3DXMatrixIdentity(&matRotateZ);
+	D3DXMatrixIdentity(&matScale);
 }
 
 
@@ -23,7 +28,7 @@ D3DMesh::~D3DMesh()
 	mesh->Release();  // ** BUG FIX!  DONT FORGET TO RELEASE RESOURCES
 }
 
-HRESULT D3DMesh::LoadMesh(WCHAR* XFilePath)
+HRESULT D3DMesh::LoadMesh(WCHAR* XFilePath, LPCWSTR texturesPaths[])
 {
 	USES_CONVERSION;
 	LPD3DXBUFFER pMtrlBuffer = NULL;
@@ -48,9 +53,10 @@ HRESULT D3DMesh::LoadMesh(WCHAR* XFilePath)
 		LPCWSTR pTextureFilename = A2W(matMaterials[i].pTextureFilename);
 		
 		/* Hardcoded because current test X file does not have well set texture path. */
-		pTextureFilename = L"../Textures/phouse_d.jpg";
+		pTextureFilename = texturesPaths[i];
+
 		//Create the texture
-		if (FAILED(ret = D3DXCreateTextureFromFile(d3dDev,
+		if (FAILED(D3DXCreateTextureFromFile(d3dDev,
 			pTextureFilename,
 			&pMeshTextures[i])))
 		{
@@ -65,12 +71,9 @@ HRESULT D3DMesh::LoadMesh(WCHAR* XFilePath)
 
 void D3DMesh::Draw()
 {
-	D3DXMATRIX translateMat;
-	// Translate mesh model
-	D3DXMatrixTranslation(&translateMat, 0, -4.0, -100);
-	D3DXMatrixTranspose(&translateMat, &translateMat);
-
-	d3dDev->SetVertexShaderConstantF(0, translateMat, 4);
+	D3DXMatrixTranspose(&matTranslate, &matTranslate);
+	d3dDev->SetVertexShaderConstantF(0, matTranslate, 4);
+	D3DXMatrixTranspose(&matTranslate, &matTranslate);
 
 	// Actually drawing something here!
 	for (DWORD i = 0; i < numMaterials; i++)

@@ -51,22 +51,34 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	V_XYZ r = {0, 0, 0};
 	vector<vector<WorldObject*>> worldObjects(3, vector<WorldObject*>());
 	
-	t = { 0, -1, 0 };
+	t = { 0, -1, 200 };
 	s = { 1, 1, 1 };
 	r = { 0, 0, 0 };
 	// Insert terain
 	worldObjects[0].push_back(new WorldObject(rectFenceR, RECTANGLE, t, r, s, 4, 0));
 
-	application->LoadVertexShader(L"../Shaders/DefaultVertexShader.hlsl", "main");
-	application->LoadPixelShader(L"../Shaders/DefaultPixelShader.hlsl", "main");
+	application->LoadVertexShader(L"../Shaders/VertexShader.hlsl", "main");
+	application->LoadPixelShader(L"../Shaders/PixelShader.hlsl", "main");
 
 	application->FillBuffers(worldObjects);
 
-	if (FAILED(application->LoadMeshModels(meshPaths, 1)))
+	if (FAILED(application->LoadMeshModel(meshPaths[1], stoneTexturePath, -20, 70, -250)))
 	{
 		MessageBox(NULL, L"Loading mesh models failed.", L"Error", MB_OK);
 		return -1;
 	}
+
+	if (FAILED(application->LoadMeshModel(meshPaths[0], houseTexturePath, 0, -4, -100)))
+	{
+		MessageBox(NULL, L"Loading mesh models failed.", L"Error", MB_OK);
+		return -1;
+	}
+
+	/*if (FAILED(application->LoadMeshModel(meshPaths[2], weedTexturePath, 0, 0, 0)))
+	{
+		MessageBox(NULL, L"Loading mesh models failed.", L"Error", MB_OK);
+		return -1;
+	}*/
 
 	appRetValue = application->Run();
 

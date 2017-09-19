@@ -5,10 +5,15 @@ const int TEXTURE_GRASS = 0;
 const int TEXTURE_FLOOR = 1;
 /* Number of textures and mesh models used in application. */
 const int TEXTURES_NUM = 4;
-const int MESH_MODELS_NUM = 1;
+const int MESH_MODELS_NUM = 3;
 /* Paths to textures and mesh models. */
 WCHAR *texturePaths[TEXTURES_NUM] = { L"..//Textures//grasstext.jpg",  L"..//Textures//boat.png",   L"..//Textures//piramid.jpg",  L"..//Textures//desert.jpg" };
-WCHAR *meshPaths[MESH_MODELS_NUM] = { L"../Textures/polHouse1.x" };
+WCHAR *meshPaths[MESH_MODELS_NUM] = { L"../Models/PolHouse/polHouse1.x", L"../Models/AncientStoneBlock/StoneBlock.x",  L"../Models/Weeds/weeds.x" };
+LPCWSTR houseTexturePath[1] = { L"../Models/PolHouse/phouse_d.jpg" };
+LPCWSTR stoneTexturePath[4] = { L"../Models/AncientStoneBlock/texture/concrete_COLOR.jpg", L"../Models/AncientStoneBlock/texture/concrete_DISP.jpg", 
+								L"../Models/AncientStoneBlock/texture/concrete_NRM.jpg", L"../Models/AncientStoneBlock/texture/concrete_COLOR.jpg" };
+
+LPCWSTR weedTexturePath[1] = { L"../Textures/grasstext.jpg" };
 
 D3DVertex0 rect[] = 
 {

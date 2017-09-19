@@ -17,7 +17,8 @@ class Game : public D3DApplication
 		*/
 		virtual HRESULT LoadTextures(WCHAR *filesArr[], unsigned short texturesNum);
 
-		virtual HRESULT LoadMeshModels(WCHAR *filesArr[], unsigned short modelsNum);
+		/* Load mesh model and add it to application mesh models. */
+		virtual HRESULT LoadMeshModel(WCHAR* XFilePath, LPCWSTR texturesPath[], int x = 0, int y = 0, int z = 0);
 
 	protected:
 		/* Overrride */
